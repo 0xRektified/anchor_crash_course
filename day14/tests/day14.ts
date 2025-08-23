@@ -13,6 +13,11 @@ describe("day14", () => {
 
   let KeypairAttack = anchor.web3.Keypair.generate();
   it("Is signed by a single signer!", async () => {
+
+    let bal_before = await program.provider.connection.getBalance(
+      program.provider.publicKey
+    )
+     console.log("before:", bal_before);
     // Add your test here.
     await program.methods.initialize()
     .accounts({
@@ -20,6 +25,17 @@ describe("day14", () => {
     })
     .rpc();
     console.log("The signer1: ", program.provider.publicKey.toBase58());
+        // log the keypair's balance after
+    let bal_after = await program.provider.connection.getBalance(
+      program.provider.publicKey
+    );
+    console.log("after:", bal_after);
+
+        // log the difference
+    console.log(
+      "diff:",
+      BigInt(bal_before.toString()) - BigInt(bal_after.toString())
+    );
   });
 
   it("Is signed by multi signers!", async () => {
@@ -46,9 +62,19 @@ describe("day14", () => {
     .rpc();
   });
 
-    it("Is NotOwner!", async () => {
+  it("Is NotOwner!", async () => {
     // Add your test here.
     await program.methods.access()
+    .accounts({
+      signerAccount: KeypairAttack.publicKey,
+    })
+    .signers([KeypairAttack])
+    .rpc();
+  });
+
+  it("Is Test Compute unit!", async () => {
+    // Add your test here.
+    await program.methods.computeUnit()
     .accounts({
       signerAccount: KeypairAttack.publicKey,
     })
