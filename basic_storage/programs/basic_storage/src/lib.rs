@@ -17,13 +17,14 @@ pub mod basic_storage {
     }
     pub fn print_x(_ctx: Context<PrintX>) -> Result<()> {
         let x = _ctx.accounts.my_storage.x;
-        msg!("the new value is {}", x);
+        let y = _ctx.accounts.my_storage.y;
+        msg!("the new value is x:{} and y:{}", x);
         Ok(())
     }
 
-    pub fn add_one(_ctx: Context<Set>, new_x: i64) -> Result<()> {
+    pub fn add_one(_ctx: Context<Set>, new_y: i64) -> Result<()> {
         let my_storage = &mut _ctx.accounts.my_storage;
-        my_storage.x = new_x + 1;
+        my_storage.y = new_y + 1;
         Ok(())
     }
 }
