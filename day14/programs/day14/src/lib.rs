@@ -12,7 +12,7 @@ pub mod day14 {
     pub fn initialize(
         _ctx: Context<Initialize>
     ) -> Result<()> {
-        let the_signer1: &mut Signer = &mut ctx.accounts.signer1;
+        let the_signer1: &mut Signer = &mut _ctx.accounts.signer1;
         msg!("The signer1: {:?}", *the_signer1);
         Ok(())
     }
@@ -20,17 +20,17 @@ pub mod day14 {
     pub fn mutlisigner(
         _ctx: Context<Initialize>
     ) -> Result<()> {
-        let the_signer1: &mut Signer = &mut ctx.accounts.signer1;
+        let the_signer1: &mut Signer = &mut _ctx.accounts.signer1;
         msg!("The signer1: {:?}", *the_signer1);
-        let the_signer2: &mut Signer = &mut ctx.accounts.signer2;
+        let the_signer2: &mut Signer = &mut _ctx.accounts.signer2;
         msg!("The signer2: {:?}", *the_signer2);
-        let the_signer3: &mut Signer = &mut ctx.accounts.signer3;
+        let the_signer3: &mut Signer = &mut _ctx.accounts.signer3;
         msg!("The signer3: {:?}", *the_signer3);
         Ok(())
     }
 
-    #[access_control(check(&ctx))]
-    pub fn access(ctx: Context<OnlyOwner>) -> Result<()>{
+    #[access_control(check(&_ctx))]
+    pub fn access(_ctx: Context<OnlyOwner>) -> Result<()>{
         msg!("I am the owner");
         Ok(())
     }
@@ -87,9 +87,9 @@ pub mod day14 {
     }
 }
 
-fn check(ctx: &Context<OnlyOwner>) -> Result<()>{
+fn check(_ctx: &Context<OnlyOwner>) -> Result<()>{
     require_keys_eq!(
-        ctx.accounts.signer_account.key(),
+        _ctx.accounts.signer_account.key(),
         OWNER.parse::<Pubkey>().unwrap(),
         OnlyOwnerError::NotOwner
     );

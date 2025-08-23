@@ -76,7 +76,7 @@ describe("day14", () => {
     // Add your test here.
     await program.methods.computeUnit()
     .accounts({
-      signerAccount: KeypairAttack.publicKey,
+      signer1: KeypairAttack.publicKey,
     })
     .signers([KeypairAttack])
     .rpc();
