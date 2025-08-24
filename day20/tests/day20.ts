@@ -7,7 +7,7 @@ describe("day20", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.day20 as Program<Day20>;
-
+  let pubkey = new anchor.web3.PublicKey("azAq71cZVjpiQvd7c4qAicrq1zQNM8Eb84xR8Y81w5o");
   it("Is initialized!", async () => {
     const [Value] = anchor.web3.PublicKey.findProgramAddressSync(
       [],
@@ -27,6 +27,13 @@ describe("day20", () => {
     await program.methods.increaseAccountSize()
     .accounts({
       val: Value
+    })
+    .rpc();
+
+    // We use UncheckedAccount to check the user account here
+    await program.methods.readBalance()
+    .accounts({
+      val: pubkey
     })
     .rpc();
   });

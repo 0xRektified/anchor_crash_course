@@ -27,6 +27,18 @@ pub mod day20 {
     pub fn increase_account_size(_ctx: Context<IncreaseAccountSize>) -> Result<()> {
         Ok(())
     }
+
+    pub fn read_balance(_ctx: Context<ReadBalance>) -> Result<()> {
+        let balance = _ctx.accounts.val.to_account_info().lamports();
+        msg!("account balance {}", balance);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct ReadBalance<'info>{
+    /// CHECK: check any account
+    pub val: UncheckedAccount<'info>
 }
 
 #[derive(Accounts)]
