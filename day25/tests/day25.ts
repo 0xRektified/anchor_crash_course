@@ -31,6 +31,9 @@ describe("day25", () => {
       seeds,
       program.programId
     )
+ 
+    console.log("owner of pda before initialize:",
+    await anchor.getProvider().connection.getAccountInfo(MyPDA));
 
     // Add your test here.
     const tx = await program.methods.initializePda()
@@ -39,11 +42,25 @@ describe("day25", () => {
     })
     .rpc();
     console.log("Initialise pda at", tx);
+    console.log("owner of pda after initialize:",
+    (await anchor.getProvider().connection.getAccountInfo(MyPDA)).owner.toBase58());
+  
+
 
     const newKeyPair = anchor.web3.Keypair.generate();
     const newKeyPair2 = anchor.web3.Keypair.generate();
-    await airdropSol(newKeyPair.publicKey, 1e9);
+    
+    const accountBefore = await anchor.getProvider().connection.getAccountInfo(newKeyPair.publicKey);
+    console.log("Account before airdrop:", accountBefore);
+    console.log("Owner before airdrop:", accountBefore?.owner?.toBase58() || "Account doesn't exist");
 
+    await airdropSol(newKeyPair.publicKey, 1);
+    
+    const accountAfter = await anchor.getProvider().connection.getAccountInfo(newKeyPair.publicKey);
+    console.log("Account after airdrop exists:", accountAfter !== null);
+    console.log("Owner after airdrop:", accountAfter?.owner?.toBase58() || "Account doesn't exist");
+    console.log("Lamports after airdrop:", accountAfter?.lamports);
+      
     console.log(`new key pair is ${newKeyPair.publicKey.toBase58()}`);
 
     try {
@@ -67,7 +84,9 @@ describe("day25", () => {
     .rpc();
     console.log(`initialise key at ${tx2}`);
 
-
+    console.log("owner of keypair after initialize:",
+      (await anchor.getProvider().connection.getAccountInfo(newKeyPair.publicKey)).owner.toBase58());
+   
     try{
       const tx4 = await program.methods.initializeKeyPairAccount()
       .accounts({
@@ -133,7 +152,6 @@ describe("day25", () => {
   it("Writing to keypair account fails!", async () => {
     console.log(`The program address is ${program.programId}`) 
     const newKeyPair = anchor.web3.Keypair.generate();
-    const receiveWallet = anchor.web3.Keypair.generate();
 
     await airdropSol(newKeyPair.publicKey, 10);
     const accountInfoBefore = await anchor.getProvider().connection.getAccountInfo(
@@ -151,4 +169,5 @@ describe("day25", () => {
       newKeyPair.publicKey);
     console.log(`initial keypair account owner is ${accountInfoAfter.owner}`);
   })
+
 });

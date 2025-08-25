@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use std::mem::size_of;
+use anchor_lang::system_program;
 
 declare_id!("1a7To5apg9ySFrHH42MhLkETAqECgoKkE3iAizM2tbQ");
 
@@ -14,6 +15,31 @@ pub mod day25 {
     pub fn initialize_key_pair_account(ctx: Context<InitializeKeypairAccount>) -> Result<()> {
         Ok(())
     }
+
+    pub fn change_owner(_ctx: Context<ChangeOwner>) -> Result<()> {
+        let account_info = &mut _ctx.accounts.store_pda.to_account_info();
+
+        // assign is the function to transfer ownership
+        account_info.assign(&system_program::ID);
+
+        // we must erase all the data in the account or the transfer will fail
+        let res = account_info.realloc(0, false);
+        if (!res.is_ok()){
+            return err!(Err::ReallocFailed)
+        };
+        Ok(())
+    }
+}
+#[error_code]
+pub enum Err{
+    #[msg("realloc failed")]
+    ReallocFailed    
+}
+
+#[derive(Accounts)]
+pub struct ChangeOwner<'info> {
+    #[account(mut)]
+    pub store_pda: Account<'info, MyPDA>,
 }
 
 #[derive(Accounts)]
