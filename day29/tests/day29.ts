@@ -53,4 +53,15 @@ Executable: false
 Rent Epoch: 18446744073709551615
 Length: 8 (0x8) bytes
 0000:   82 30 f7 f4  b6 bf 1e 1a
+
+
+~/git/solana/anchor/day29 (master*) » solana program show 6s26X8cev112oR96FZcWkkvtNEYBPPV9A5QeanShuPhR                                  dev@Gabriels-MBP
+
+Program Id: 6s26X8cev112oR96FZcWkkvtNEYBPPV9A5QeanShuPhR
+Owner: BPFLoaderUpgradeab1e11111111111111111111111
+ProgramData Address: 4EGjEim8tCN4KKru3t5my4MEbA9xZyJaRsVmRpouzEjo <- data are located here
+Authority: azAq71cZVjpiQvd7c4qAicrq1zQNM8Eb84xR8Y81w5o
+Last Deployed In Slot: 28
+Data Length: 207104 (0x32900) bytes
+Balance: 1.44264792 SOL
 */
