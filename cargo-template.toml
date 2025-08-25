@@ -1,0 +1,30 @@
+[package]
+name = "your_program_name"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "your_program_name"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build"]
+anchor-debug = []
+
+[dependencies]
+anchor-lang = "0.31.1"
+
+[dev-dependencies]
+anchor-client = "0.31.1"
+
+# Optional: Add lints to catch common issues
+[lints.rust]
+unused_must_use = "warn"
+unused_variables = "warn"
+dead_code = "warn"
