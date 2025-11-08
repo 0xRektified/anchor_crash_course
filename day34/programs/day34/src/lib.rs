@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken; // ATA creation
-use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer, SetAuthority};
 
 declare_id!("332rrVwdQRSz6VKin6UjZb7KtvG9WHzJuJXABszzrdgi");
 
@@ -54,6 +54,31 @@ pub mod day34 {
         msg!("Token Account Balance: {}", balance);
 
         Ok(())
+    }
+
+    pub fn disable_mint_authority(ctx: Context<DisableAuthority>) -> Result<()>{
+        let cpi_accounts = SetAuthority {
+            current_authority: ctx.accounts.signer.to_account_info(),
+            account_or_mint: ctx.accounts.mint.to_account_info(),
+        };
+        let cpi_ctx = CpiContext::new(ctx.accounts.token_program.to_account_info(), cpi_accounts);
+        token::set_authority(cpi_ctx, token::spl_token::instruction::AuthorityType::MintTokens, None)?;
+        Ok(())
+    }
+
+    #[derive(Accounts)]
+    pub struct DisableAuthority<'info> {
+        #[account(mut)]
+        pub signer: Signer<'info>,
+
+        #[account(
+            mut,
+            seeds = [ b"my_mint", signer.key().as_ref()],
+            bump
+        )]
+        pub mint: Account<'info, Mint>,
+
+        pub token_program: Program<'info, Token>,
     }
 
     #[derive(Accounts)]

@@ -120,4 +120,66 @@ describe("day34", () => {
     const balance = await provider.connection.getTokenAccountBalance(ata);
     assert.isTrue(balance.value.uiAmount > 0 , "Token balance should be greater than 0");
   })
+
+  it("Disable authority", async() => {
+    const newSigner = new web3.Keypair();
+    let airdroptx = await anchor.getProvider().connection.requestAirdrop(newSigner.publicKey, 1e9);
+    const latestBlockHash = await anchor.getProvider().connection.getLatestBlockhash();
+    await anchor.getProvider().connection.confirmTransaction({
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: airdroptx,
+    })
+
+    const [mint] = PublicKey.findProgramAddressSync(
+      [Buffer.from("my_mint"), newSigner.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const ata = splToken.getAssociatedTokenAddressSync(mint, newSigner.publicKey, false);
+
+
+    const tx = await program.methods
+      .createAndMintToken()
+      .accounts({
+        signer: newSigner.publicKey,
+        newMint: mint,
+        newAta: ata,
+        tokenProgram: splToken.TOKEN_PROGRAM_ID,
+        associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([newSigner])
+      .rpc();
+    console.log("Mint and transfer", tx);
+
+    const initialMint = await splToken.getAccount(provider.connection,ata); 
+
+    console.log("Initial mint value", initialMint.amount);
+  
+    const tx2 = await program.methods.disableMintAuthority()
+    .accounts({
+      signer: newSigner.publicKey,
+      mint: mint,
+      tokenProgram: splToken.TOKEN_PROGRAM_ID,
+    })
+    .signers([newSigner])
+    .rpc()
+    console.log("disable authority", tx);
+
+    try {
+      await splToken.mintTo(
+        provider.connection,
+        signerKp,
+        mint,
+        ata,
+        newSigner,
+        100_000_000
+      );
+      assert.fail("Mint should have failed but succeeded");
+    } catch(error){
+      console.log("Mint correctly failed")
+    }
+
+  })
 });
